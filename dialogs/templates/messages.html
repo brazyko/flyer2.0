@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<title>My messages</title>
+{% if not chat %}
+    <div class="panel panel-body">
+        It's impossible to start a conversation.No user is found or you do not have access to this conversation."
+    </div>
+{% else %}
+    {% load tz %}
+    {% if chat %}
+     {% for i in audio %}
+     <audio   controls src='{{ i.message.url }}' type="audio/mpeg"></audio>
+     {% endfor %}
+    <div class="border rounded p-5">
+        <div class="container">
+            <div class="col-lg-12 border mb-3">
+                {% for participant in chat.members.all %}
+                {{ participant.username }}
+                {% endfor %}
+            </div>
+            <div class="row " id='messagebox'>
+                {% for message in msgs %}
+                {% if message.author != request.user %}
+                
+                <div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8">
+                    <p align="left" style="color:#c2c2c2; font-size: 14px;">
+                        <a href="{% url 'users:user-list' %}{{ message.author.username }}">
+                            {{message.author}}
+                        </a>
+                    </p>
+                    <p align="left" >
+                        {{message.message}}
+                    </p>
+                    <p align="left" style="font-size: 14px;">{{ message.pub_date|timesince }} ago
+                        {% if message.is_readed == True %}
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            <path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/>
+                          </svg>
+                        {% else %}
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                          </svg>
+                        {% endif %}
+                    </p>
+                </div>  
+                <div class="col-lg-6 col-md-4 col-sm-4">
+                    <div class="float-right">
+                        
+                    </div>   
+                </div>
+                {% else %}
+                <div class="col-lg-6 col-md-4 col-sm-4">
+                    
+                </div>  
+                <div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8">
+                    
+                    <div class="float-right">
+                        <p align="right" style="color:#c2c2c2; font-size: 14px;">
+                            <a href="{% url 'users:user-list' %}{{ message.author.username }}">
+                                {{message.author}}
+                            </a>
+                        </p>
+                        <p align="right" >
+                            {{message.message}}
+                        </p>
+                    </div>  
+                    <p align="right" style="font-size: 14px;">{{ message.pub_date|timesince }} ago
+                        {% if message.is_readed == True %}
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            <path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/>
+                          </svg>
+                        {% else %}
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                          </svg>
+                        {% endif %}
+                    </p> 
+                </div>
+                {% endif %}
+                    
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <div id="message_form">
+            <form id="message-form" class="panel panel-body" method="post" >
+                {% load bootstrap4 %}
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                
+            </form><button type="submit" id="ajax-text-me" class="btn btn-success"><span class="ico ico-comment"></span>Send Message</button>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            function refresh() {
+                $.ajax({
+                    url: $("dialogs:create_dialog").data('url'),
+                    type : 'GET',
+                    
+                    success: function(response){
+                        if(response === 'nmsg'){
+                        }
+                        else{
+                            console.log(response)
+                            $('#messagebox').append('<div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8"><p align="left" style="color:#c2c2c2; font-size: 14px;"><a href="{% url "users:user-list" %}'+response.author+'">'+response.author+'</a></p><p align="left" >'+response.message+' </p> <p align="left" style="font-size: 14px;">'+response.pub_date+'ago{% if message.is_readed == True %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/></svg>{% else %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>{% endif %}</p></div>  <div class="col-lg-6 col-md-4 col-sm-4"><div class="float-right"></div></div>')
+                        }
+                        setTimeout(refresh, 100);
+                    },
+                    error: function(error){
+                        console.log(error)
+                    }
+                });
+            }
+
+            $(function(){
+                refresh();
+            });
+
+            $('#ajax-text-me').click(function(){
+                var serializedData = 
+                $('#message-form').serialize();
+
+                $.ajax({
+                    url: $("dialogs:create_dialog").data('url'),
+                    data: serializedData,
+                    type: 'post',
+                    success: function(response) {
+                        $("#messagebox").append('<div class="col-lg-6 col-md-4 col-sm-4"></div><div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8"><div class="float-right"><p align="right" style="color:#c2c2c2; font-size: 14px;"><a href="{% url "users:user-list" %}'+ response.author.username+'">'+ response.author.username +'</a></p><p align="right" >'+ response.message.message +'</p></div><p align="right" style="font-size: 14px;">'+ response.message.pub_date +' ago{% if message.is_readed == True %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/></svg>{% else %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>{% endif %}</p> </div>')
+                    }
+                })
+                $('#message-form')[0].reset();
+            });
+        });
+    </script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js" integrity="sha512-HGOnQO9+SP1V92SrtZfjqxxtLmVzqZpjFFekvzZVWoiASSQgSr4cw9Kqd2+l8Llp4Gm0G8GIFJ4ddwZilcdb8A==" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" integrity="sha512-17EgCFERpgZKcm0j0fEq1YCJuyAWdz9KUtv1EjVuaOz8pDnh/0nZxmU6BBXwaaxqoi9PQXnRWqlcDB027hgv9A==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css" integrity="sha512-wR4oNhLBHf7smjy0K4oqzdWumd+r5/+6QO/vDda76MW5iug4PT7v86FoEkySIJft3XA0Ae6axhIvHrqwm793Nw==" crossorigin="anonymous" />
+
+
+<body>
+	<script>
+		$(document).ready(()=>{
+			$('.slick').slick({
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				arrows: false,
+				fade: true,
+				asNavFor: '.slider-nav',
+			})
+			$('.slider-nav').slick({
+				slidesToShow: "{{ object.odd_images.all.count }}",
+				dots:true,
+				slidesToScroll: 1,
+				asNavFor: '.slick',
+				focusOnSelect: true,
+			})
+		});
+	
+	</script>
+<title>
+	FlyEr - {{ object.title }}
+</title>
+<div class="container">
+	<div class="row">
+	
+		<div class='col-12 col-md-8 border mt-2'>
+			
+			<div class='img-block'>
+				<div class="slick">
+					{% for image in object.odd_images.all %}
+					<div class="slides-images w-100" style="background-image: url({{image.image.url}}); "></div>
+					{% endfor %}
+				</div>
+				<div class="slider-nav">
+					{% for image in object.odd_images.all %}
+					<div class="slides-help-images w-100" style="background-image: url({{image.image.url}}); "></div>
+					{% endfor %}
+				</div>
+			</div>
+			<div>
+				<h3 id='item-title-main'>{{ object.title }}</h3> 
+				
+				{% if request.user in object.users_like.all %}
+				<a class='btn btn-secondary' href="{% url 'products:like-toggle' object.category.slug object.slug  %}">Вилучити із збережених</a>
+				{% else %}
+				<a class='btn btn-outline-secondary' href="{% url 'products:like-toggle' object.category.slug object.slug  %}">В збережені</a>
+				{% endif %}
+				<h5>{{ object.price }}</h5>
+				<p>{{ object.description }}</p>
+				<p>Стан: {{ object.summary }}</p>
+				<p>
+					{% if object.features == True %}
+						Відправлю почтою
+					{% else %}
+						Тільки на місці
+					{% endif %}
+				</p>
+				<p>Додано: {{ object.publish|date:'j.m.Y'}}</p>
+			</div>
+		</div>
+		<div class="col-12 col-md-4 border mt-2">
+			<h4 class='mt-2'>Інформація про продавця</h4>
+			<h5>{{ object.author.username }}</h5>
+			<img src="{{ object.author.imgage.url }}"></img>
+			<p><a class='btn btn-outline-secondary' href={% url 'users:user-profile' object.author.username %}>Перейти на сторінку користувача {{ object.author.username }}</a></p>
+		</div>
+		
+	
+	</div>
+</div>
+</body>
+	
+{% endblock %}

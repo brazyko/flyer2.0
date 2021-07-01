@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='container'>
+	<div class="row">
+		<div class="col-lg-12 text-center">
+			<h2>Ви вийшли з сайту</h2>
+			<div class="border-top pt-3">
+				<small class="text-mutde">
+					<a href="{% url 'login' %}">Ввійти</a>
+				</small>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

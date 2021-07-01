@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+	{% if user.is_superuser %}
+		<form action="." method="POST">{% csrf_token %}
+			<h1>do u want to delete the product" {{ object.title }} "?</h1>
+			<p><input type="submit" value ="Yes" ><a href="../">Cencel</a></p>
+		</form>
+	{% else %}
+		<h1><a href="../">Go back</a></h1>
+	{% endif %}
+
+{% endblock %}

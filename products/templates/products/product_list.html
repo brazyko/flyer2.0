@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mptt_tags %}
+{% block content %}
+
+<title>FlyEr - products</title>
+<body>
+<section>
+  <div class='container'>
+
+      <div id="demo" class="collapse in ">
+        <div class="accordion">
+          {% recursetree categories %} 
+            <div class="tab">
+            <input type="checkbox" id="{{ node.slug }} " name="tab-group">
+            <label for="{{ node.slug }} " class="tab-title">{{ node.name }} </label> 
+            <section class="tab-content"> 
+              <p> GO to <a href='{{ node.slug }}'> {{ node.name }}</a> </p>
+              {% if not node.is_leaf_node %}
+                    <ul>
+                        <li>{{ children }}</li>
+                    </ul>
+                  {% endif %}
+            </section> 
+            </div> 
+          {% endrecursetree %}
+        </div>
+      </div>
+
+      <form class="row g-3 mt-3" action="{% url 'products:product-list1' %}" method="get">
+        <div class="col-md-12">
+          <label for="inputAddress" class="form-label">Пошук</label>
+          <input type="text" class="form-control" id="inputAddress" placeholder="знайти..." name='q'>
+        </div>
+        <div class="col-md-6 mt-3">
+          <select id="inputState" class="form-control" name='select'>
+          <option value="contains">Містить</option>
+          <option value="full" >Повний збіг</option>
+        </select>
+        </div>
+        <div class="col-md-6 mt-3">
+          <select id="inputState" class="form-control" name='sort'>
+          <option value="not" selected>Не сортувати</option>
+          <option value="lowhigh">Спочатку дешевші</option>
+          <option value="highlow">Спочатку дорожчі</option>
+        </select>
+        </div>
+        <div class="col-12 mb-3 mt-3 text-center">
+          <button type="submit" class="btn btn-outline-success">Шукати!</button>
+        </div>
+      </form>
+
+      <div class="row">
+        {% for product in products %}
+          <div class="col-12 col-sm-6 col-md-4 col-xl-3 border">
+            {% if product.odd_images.count > 0 %}
+            {% for image in product.odd_images.all %}
+              {% if forloop.counter == 1 %}
+                <div class='img-list-page mt-2' style="background-image: url({{ image.image.url }}); "></div>
+              {% else %}
+              {% endif %}
+            {% endfor %}
+            {% else %}
+            no odd_images
+            {% endif %}
+            <h5>{{product.title}}</h5>
+            <p>{{ product.summary }}</p>
+            <p>
+              {% if product.features == True %}
+              Відправлю поштою
+              {% else %}
+              Тільки на місці
+              {% endif %}
+            </p>
+            <p>{{ product.price }}</p>
+            <a  class="btn btn-outline-secondary w-100 mb-2" href='{{ product.get_absolute_url }}'>Детальніше</a>
+          </div>
+        {% endfor %}
+      </div>
+
+      <nav aria-label="Page navigation example" class="mt-3">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+              <li class="page-item"><a class='page-link' href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;</a></li>
+          {% else %}
+              <li class="page-item disabled"><span><a href='#' class='page-link'>&laquo;</a></span></li>
+          {% endif %}
+
+          {% if page_obj.number|add:'-4' > 1 %}
+              <li class='page-item'><a class='page-link' href="?page={{ page_obj.number|add:'-5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+          {% endif %}
+
+          {% for i in page_obj.paginator.page_range %}
+              {% if page_obj.number == i %}
+                  <li class="page-item active"><span class='page-link'>{{ i }} <span class="sr-only">(current)</span></span></li>
+              {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+                  <li class='page-item'><a class='page-link' href="?page={{ i }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ i }}</a></li>
+              {% endif %}
+          {% endfor %}
+
+          {% if page_obj.paginator.num_pagespage_obj.number|add:'4' %}
+              <li class='page-item'><a class='page-link' href="?page={{ page_obj.number|add:'5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+          {% endif %}
+
+          {% if page_obj.has_next %}
+              <li class='page-item'><a class='page-link' href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&raquo;</a></li>
+          {% else %}
+              <li class="page-item disabled"><span><a class='page-link'>&raquo;</a></span></li>
+          {% endif %}
+        </ul>
+      </nav>
+  </div>
+</section>
+
+
+{% endblock %}

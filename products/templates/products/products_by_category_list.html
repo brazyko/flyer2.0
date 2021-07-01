@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+{% load mptt_tags %}
+<button type="button" class="menu_butt" data-toggle="collapse" data-target="#demo">
+  Знайти за категорією
+</button>
+<div id="demo" class="collapse in ">
+  <div class="accordion">
+    {% recursetree menu_categories %} 
+      <div class="tab">
+      <input type="checkbox" id="{{ node.slug }} " name="tab-group">
+      <label for="{{ node.slug }} " class="tab-title">{{ node.name }} </label> 
+      <section class="tab-content"> 
+        <p> GO to <a href='{{ node.slug }}'> {{ node.name }}</a> </p>
+        {% if not node.is_leaf_node %}
+              <ul>
+                  <li>{{ children }}</li>
+              </ul>
+            {% endif %}
+      </section> 
+      </div> 
+    {% endrecursetree %}
+  </div>
+</div>
+
+<p class="breadcrumbs">
+  Поточна категорія: 
+  {% for ancestor in ancestors %}
+    <a href="/products/{{ ancestor.slug }}/"> {{ ancestor }}/</a>
+  {% endfor %}
+    <a href="../{{current_category.slug}}">{{current_category.name}}</a>
+</p>
+
+<form action="{% url 'products:product-list1' %}" method="get"  class='search'>
+  <div class="search-div">
+    <div>
+      <input name="q" type="text" id="input-name" placeholder="шукати...">
+    </div>
+    <div>
+      <select name="select" >
+        <option value="">Тип пошуку</option>
+        <option value="contains">Містить</option>
+        <option value="full" >Повний збіг</option>
+      </select>
+    </div>
+    <div>
+      <select name="sort">
+        <option value="not">Не сортувати</option>
+        <option value="lowhigh">Спочатку дешевші</option>
+        <option value="highlow">Спочатку дорожчі</option>
+      </select>
+    </div>
+    <div>
+      <input type="submit" value="Знайти" id='search-button'>
+    </div>
+  </div>
+</form>
+
+<div class="container-grid">
+  {% for product in products %}
+    <div class="grid-items">
+      <div class='items-title'>
+        {{ product.title|truncatechars:15 }}
+      </div>
+      <div class='items-image'>        
+        {% if product.odd_images.count > 0 %}
+        {% for image in product.odd_images.all %}
+          {% if forloop.counter == 1 %}
+          <img  src="{{ MEDIA_URL}} {{ image.image.url }}" height="168px">
+          {% else %}
+          {% endif %}
+          {% endfor %}
+        {% else %}
+        no odd_images
+        {% endif %}
+      </div>
+      <div class='items-summary'>
+        {{ product.summary|truncatechars:29 }}
+      </div>
+      <div class='items-price'>
+        {{ product.price }}
+      </div>
+      <a href="{{ product.get_absolute_url }}">
+      <div class="link">
+        View more
+      </div>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+
+<ul class="pagination">
+
+  {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;</a></li>
+  {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+  {% endif %}
+
+  {% if page_obj.number|add:'-4' > 1 %}
+      <li><a href="?page={{ page_obj.number|add:'-5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+  {% endif %}
+
+  {% for i in page_obj.paginator.page_range %}
+      {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+          <li><a href="?page={{ i }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ i }}</a></li>
+      {% endif %}
+  {% endfor %}
+
+  {% if page_obj.paginator.num_pagespage_obj.number|add:'4' %}
+      <li><a href="?page={{ page_obj.number|add:'5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+  {% endif %}
+
+  {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&raquo;</a></li>
+  {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+  {% endif %}
+
+</ul>
+
+{% endblock %}

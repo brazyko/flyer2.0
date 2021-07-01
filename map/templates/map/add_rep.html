@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load widget_tweaks %}
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+<title>FlyEr - Додати майстерню</title>
+
+<div class='container'>
+  <div class='row'>
+    <div class='col-lg-12 text-center'>
+      <form enctype="multipart/form-data" method="POST" class='updateform'>
+    {% csrf_token %} 
+    <p>Фото на задній фон</p>
+    <div class="custom-file">
+      {% render_field form.main_image class="custom-file-input" id="inputGroupFile03" %}
+      <label class="custom-file-label" for="inputGroupFile03">Добавити фото на задній фон</label>
+    </div>
+    <p>Назва майстерні</p>
+    {% render_field form.workshop_name class="form-control" %}
+    <p>Коротко про майстерню</p>
+    {% render_field form.about_workshop class="form-control" %}
+    <p>Адреса</p>
+    {% render_field form.address class="form-control" %}
+
+    <div id="grid">
+      <h3>Послуги, які надає Ваша майстерня</h3>
+     
+      <div class="wrapper table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Назва послуги</th>
+            <th scope="col">Опис</th>
+            <th scope="col">Ціна</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ service_form.management_form }}
+            {% for form in service_form %}
+              <tr class='servide-add'>
+                <td>{% render_field form.name class="form-control" %}</td> 
+                <td>{% render_field form.description class="form-control" %}</td> 
+                <td>{% render_field form.price class="form-control" %}</td> 
+              <tr>
+            {% endfor %}
+        </tbody>
+      </table>
+        
+      </div>
+  </div>
+    <input type='button' id='more' value='Додати більше послуг!' />
+    <p>Розташування майстені</p>
+    <div id='map' style='width: 100%; height: 500px; border: 1px solid #000;'></div>
+    {{form.coord_h.as_hidden}}
+    {{form.coord_v.as_hidden}}
+    
+    <div id='submit_item'>
+      <input type="submit" class="btn btn-success m-2" value="Додати!">
+    </div>
+  </form>
+    </div>
+  </div>
+</div>	
+
+   <script>
+
+      let data = Array.from(document.querySelectorAll('.wrapper .servide-add')),
+          step = 4,
+          item = 0;
+
+      data.slice(step).forEach(e => e.style.display = 'none');
+      item += step;
+
+      document.querySelector('#more').addEventListener('click', function(e){
+        let tmp = data.slice(item, item + step);
+        tmp.forEach(e => e.style.display = '');
+        item += step;
+        
+        if(tmp.length < 4)
+          this.remove();
+      });
+
+    mapboxgl.accessToken = "pk.eyJ1IjoiYnJhenlrbyIsImEiOiJjazlyY2loNXMwc3M3M2ZydHpkaGVsaDd5In0.N4uOEHtVfwjTxty8zqaTZA";
+    var map = new mapboxgl.Map({
+     container: 'map',
+     style: 'mapbox://styles/mapbox/streets-v10',
+     center: [24.02,49.844],
+     zoom: 6
+    });
+    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(
+    new mapboxgl.GeolocateControl({
+    positionOptions: {
+    enableHighAccuracy: true
+    },
+    trackUserLocation: true
+    })
+    );
+      var marker = new mapboxgl.Marker().setLngLat([30,30]).addTo(map);
+      map.on('click', function(e) {
+        document.getElementById("id_coord_v").value = e.lngLat.lat;
+      	document.getElementById("id_coord_h").value = e.lngLat.lng;
+        map.removeLayer(marker);
+        marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+      });
+
+   </script>
+   <style type="text/css">
+
+    .servide-add{
+      border-bottom: 0px solid red;
+    }
+    .servide-add > input{
+      border:0px;
+      border-bottom: 2px solid #c1c1c1;
+      margin: 20px;
+    }
+
+    #more{
+      background: none;
+      border: none;
+      border-bottom: 2px solid #c2c2c2;
+      transition: 0.4s ease-in-out;
+      margin-bottom: 30px;
+    }
+    #more:hover{
+      transition: 0.4s ease-in-out;
+      border-bottom: 2px solid #ec3f7A;
+    }
+    .mapboxgl-canvas{
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    .marker {
+    background:#fff;
+    background-size: cover;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #c2c2c2;
+    border-radius: 50%;
+    cursor: pointer;
+    }
+    .mapboxgl-popup-content{
+      background: #fff;
+      text-align: center;
+      border:1px solid #c2c2c2;
+      min-width: 250px;
+    }
+    img {
+        max-height: 70px;
+        width: 250px;
+        object-fit: cover;
+      -webkit-mask-image:-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+    }
+    .mapboxgl-popup-content{
+        padding: 0;
+        border-radius: 7px;
+    }
+   </style>
+{%endblock%}

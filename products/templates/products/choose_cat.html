@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<a href="{% url 'products:product-create' %}">Add product</a>
+
+
+<form action="{% url 'products:search_results' %}" method="get"  class='search'>
+  <div>
+      <input name="q" type="text" placeholder="title">
+      search type
+      <select name="select">
+
+        <option value="contains">contains</option>
+        <option value="full">full</option>
+      </select>
+      <select name="sort">
+        <option value="not">don't sort</option>
+        <option value="lowhigh">cheap-expensive</option>
+        <option value="highlow">expensive-cheap</option>
+      </select>
+      <input type="submit" value="Find" id='search-button'>
+  </div>
+</form>
+
+
+
+
+<ul class="pagination">
+
+  {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;</a></li>
+  {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+  {% endif %}
+
+  {% if page_obj.number|add:'-4' > 1 %}
+      <li><a href="?page={{ page_obj.number|add:'-5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+  {% endif %}
+
+  {% for i in page_obj.paginator.page_range %}
+      {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+          <li><a href="?page={{ i }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ i }}</a></li>
+      {% endif %}
+  {% endfor %}
+
+  {% if page_obj.paginator.num_pagespage_obj.number|add:'4' %}
+      <li><a href="?page={{ page_obj.number|add:'5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+  {% endif %}
+
+  {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&raquo;</a></li>
+  {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+  {% endif %}
+
+</ul>
+
+<style type="text/css">
+  
+nav ul {
+  color: black;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+nav ul:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+nav a {
+  text-decoration: none;
+  display: block;
+  transition: .3s linear;
+}
+.topmenu > li {
+  float: left;
+  position: relative;
+  border-left: 1px solid black;
+}
+.topmenu > li:first-child {border-left: 0;}
+.topmenu > li > a {  
+  padding: 20px 30px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #000;
+  letter-spacing: 2px;
+}
+.topmenu > li > a.active, 
+.submenu a:hover {color: #ddbe86;}
+.topmenu .fa, 
+.submenu .fa {
+  margin-left: 5px;
+  color: inherit;
+}
+.submenu {
+  position: absolute;
+  z-index: 5;
+  min-width: 200px;
+  background: white;
+  border-top: 1px solid #CBCBCC;
+  border-left: 1px solid #CBCBCC;
+  border-right: 1px solid #CBCBCC;
+  visibility: hidden;
+  opacity: 0; 
+  transform-origin: 0% 0%;
+  transform: rotateX(-90deg);
+  transition: .3s linear;  
+}
+.submenu li {position: relative;}
+.submenu li a {
+  color: #282828;
+  padding: 10px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid #CBCBCC;
+}
+.submenu .submenu {
+  position: absolute;
+  left: 100%;
+  top: -1px;
+  transition: .3s linear;
+}
+nav li:hover > .submenu {
+  transform: rotateX(0deg);
+  visibility: visible;
+  opacity: 1;
+}
+
+</style>
+
+<nav>
+  <ul class="topmenu">
+    {% for category in categories %}
+    <li><a href="../{{ category}}/" class="active">{{ category }}<span class="fa fa-angle-down"></span></a>
+      <ul class="submenu">
+        {% for subc in category.child.all %}
+        <li><a href="../{{ category}}/{{ subc.name }}/"><span class="fa fa-angle-down">{{ subc.name }}</span></a>
+          <ul class="submenu">
+            {% for subcat in subc.child.all %}
+              {% if subcat %}
+               <li><a href="../{{ category}}/{{ subc.name }}/{{ subcat.name }}">{{ subcat.name }}</a></li>
+               {% else %}
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+</nav>
+<ul class="pagination">
+
+  {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;</a></li>
+  {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+  {% endif %}
+
+  {% if page_obj.number|add:'-4' > 1 %}
+      <li><a href="?page={{ page_obj.number|add:'-5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+  {% endif %}
+
+  {% for i in page_obj.paginator.page_range %}
+      {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+          <li><a href="?page={{ i }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ i }}</a></li>
+      {% endif %}
+  {% endfor %}
+
+  {% if page_obj.paginator.num_pagespage_obj.number|add:'4' %}
+      <li><a href="?page={{ page_obj.number|add:'5' }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&hellip;</a></li>
+  {% endif %}
+
+  {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}{% if request.GET.select %}&select={{ request.GET.select }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&raquo;</a></li>
+  {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+  {% endif %}
+
+</ul>
+
+{% endblock %}

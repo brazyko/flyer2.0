@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<title>
+    {{user.username}}'s - Dialogs
+</title>
+<style>
+#record { 
+    border: 1px solid #000;
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    max-width: 50%;
+    max-height: 15%;
+    position: relative;
+}
+#stopRecord {
+  background-color: #000;
+  border: 1px solid #000;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+}
+</style>
+<p>
+  <button id=record>record</button>
+  <button id=stopRecord disabled>Stop</button>
+</p>
+<p>
+  <audio id=recordedAudio></audio>
+
+</p>
+<script> 
+       navigator.mediaDevices.getUserMedia({audio:true})
+      .then(stream => {handlerFunction(stream)})
+            function handlerFunction(stream) {
+            rec = new MediaRecorder(stream);
+            rec.ondataavailable = e => {
+              audioChunks.push(e.data);
+              if (rec.state == "inactive"){
+                let blob = new Blob(audioChunks,{type:'audio/mpeg-3'});
+                recordedAudio.src = URL.createObjectURL(blob);
+                recordedAudio.controls=true;
+                recordedAudio.autoplay=false;
+                sendData(blob)
+              }
+            }
+          }
+                function sendData(data) {}
+
+        record.onclick = e => {
+          record.disabled = true;
+          record.style.backgroundColor = "black"
+          record.style.color = "white"
+          stopRecord.style.backgroundColor = "white"
+          stopRecord.style.color = "black"
+          stopRecord.disabled=false;
+          audioChunks = [];
+          rec.start();
+        }
+        stopRecord.onclick = e => {
+          record.disabled = false;
+          stop.disabled=true;
+          record.style.backgroundColor = "white"
+          record.style.color = "black"
+          stopRecord.style.backgroundColor = "black"
+          stopRecord.style.color = "white"
+          rec.stop();
+        }
+</script> 
+
+<div class="container-fluid" id="container">
+  <div class="row">
+    <table class="table table-dark">
+      <tbody id="table">
+        {% for chat in chats%}
+        <tr>  
+              {% for user in chat.members.all %}
+              {% if user != request.user %}
+            <td>
+                  <img src="{{ user.profile.image.url }}" width='50px'  alt="" >
+                  {{user.username}}
+            </td>
+              {% endif %}
+              {% endfor %}    
+            <td>
+              {% if chat.message_set.last.is_readed == False %}
+                <p style="color:white">
+                {{chat.message_set.last}}
+                </p>
+              {% else %}
+              <p style="color:#c2c2c2">
+                {{chat.message_set.last}}
+              </p>
+              {% endif %}
+            </td>   
+            <td>
+              <a href="{{ chat.id }}" style="color:#fff; text-decoration:none;">go to chat</a>
+            </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        function refresh() {
+            $.ajax({
+                url: $("dialogs:dialogs").data('url'),
+                type : 'GET',
+                
+                success: function(response){
+                        console.log(response)
+                      setTimeout(refresh, 1001);
+                },
+                error: function(error){
+                    console.log(error)
+                }
+            });
+        }
+
+        $(function(){
+            refresh();
+        });
+    });
+  </script>
+
+	</div>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load widget_tweaks %}
+{% load mptt_tags %}
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <title>FlyER - {{ post.title }}</title>
+  <style>
+    .like_span{
+      color: #000;
+    }
+    .like_span:hover{
+      text-decoration: none;
+    }
+    a{
+      color:#000; text-decoration:none;
+    }
+    a:hover{
+      color:#000; text-decoration:none;
+    }
+  </style>
+
+  <body>
+   <div class="container">
+    <div class="row"> 
+      <div class='col-lg-8 border mt-3 mb-3'>
+      <div class="mt-3">
+        <img src="{{ MEDIA_URL }} {{ post.image.url }}" alt="" width="100%">
+          </div>
+        <h2>
+          {{ post.title }}
+        </h2>
+        <div class="text-center">
+          {% for category in post.categories.all %}
+            <a class="badge badge-dark" href='{% url 'articles:posts-by-category' category.slug %}'>{{ category }}</a>
+          {% endfor %}
+        </div>
+        <div>
+          {{ post.description }}
+        </div>
+        <h6 class="border-bottom pb-1 mt-2">Написав {{ post.author.username }} {{ post.publish|date:'j.m.Y'}}</h6>
+
+        <div class="comments mt-5">
+          {% if request.user.is_authenticated %}
+            <form action="." method="POST">
+            {% csrf_token %} 
+              <div class="form-group">
+                {{ form.content }}
+              </div>
+              <input type="submit" class="btn btn-outline-secondary" value="Коментувати" >
+            </form>
+          {% endif %}
+
+            {% recursetree post.comments.all %}
+              
+                {% if node.parent %}
+                
+                  <div class="card mt-2">
+                    <div class="card-header">
+                      <a href="{% url 'users:user-profile' node.parent.user.username %}">@{{ node.parent.user.username }}  </a>
+                      - "{{ node.parent.content|truncatechars:30 }}"
+                    </div>
+                    <div class="card-body">
+                      <img src="{{ node.user.profile.image.url }}" alt="" class="rounded-circle" width="40" height="40">
+                      <h5 class="card-title">{{ node.user.username }}</h5>
+                      <p class="card-text">{{ node.content }}</p>
+                      <span>{{ node.publish|date:'j.m.Y' }}</span><br>
+                      {% if request.user in node.likes.users.all %}
+                      <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='like' %}"> 
+                        <img src="{% static "images/like_full.png" %}" width="22px">
+                        <span class="like_span">{{node.get_total_likes}}</span>
+                      </a>
+                      {% else %}
+                        <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='like' %}">
+                          <img src="{% static "images/like.png" %}" width="22px">
+                          <span class="like_span">{% if node.get_total_likes  %}{{node.get_total_likes}} {% else %} 0{% endif %}
+                        </a>
+                      {% endif %}
+                      {% if request.user in node.dis_likes.users.all %}
+                      <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='dis_like' %}"> 
+                        <img src="{% static "images/dislike_full.png" %}" width="22px">
+                        <span class="like_span">{{node.get_total_dis_likes}}</span>
+                      </a>
+                      {% else %}
+                      <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='dis_like' %}">
+                        <img src="{% static "images/dislike.png" %}" width="22px">
+                        <span class="like_span">{% if  node.get_total_dis_likes %}{{node.get_total_dis_likes}}
+                      {% else %} 0{% endif %}</span>
+                      </a>
+                      {% endif %}
+                      <p>
+                        <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#comment-{{node.id}}" aria-expanded="false" aria-controls="collapseExample">
+                          Відповісти
+                        </button>
+                      </p>
+                      <div class="collapse" id="comment-{{node.id}}">
+                          <form action="." method="POST">
+                            {% csrf_token %} 
+                              <div class="form-group">
+                                {{ form.content }}
+                                {% render_field form.parent  id=node.id style='display:none;' %}
+                                <script>
+                                  document.getElementById('{{node.id}}').value = "{{node.id}}";
+                                </script>
+                              </div>
+                              <input type="submit" class="btn btn-outline-secondary" value="Відповісти" >
+                            </form>
+                      </div>
+                    </div>
+                  </div>
+                
+                  {% else %}
+                    <div class="text-justify darker float-left p-2 mt-2 mb-2 w-100 border-bottom">
+                      <img src="{{ node.user.profile.image.url }}" alt="" class="rounded-circle" width="40" height="40">
+                      <h4><a href="{% url 'users:user-profile' node.user.username %}">{{ node.user.username }}</a></h4>
+                      <span>
+                        {{ node.content }}
+                      </span><br />      
+                      <span>{{ node.publish|date:'j.m.Y' }}</span> <br>
+                      {% if request.user in node.likes.users.all %}
+                      <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='like' %}"> 
+                        <img src="{% static "images/like_full.png" %}" width="22px">
+                        <span class="like_span">{{node.get_total_likes}}</span>
+                      </a>
+                      {% else %}
+                        <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='like' %}">
+                          <img src="{% static "images/like.png" %}" width="22px">
+                          <span class="like_span">{% if node.get_total_likes  %}{{node.get_total_likes}} {% else %} 0{% endif %}
+                        </a>
+                      {% endif %}
+                      {% if request.user in node.dis_likes.users.all %}
+                      <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='dis_like' %}"> 
+                        <img src="{% static "images/dislike_full.png" %}" width="22px">
+                        <span class="like_span">{{node.get_total_dis_likes}}</span>
+                      </a>
+                      {% else %}
+                      <a href="{% url 'articles:requirement_comment_vote' article_slug=post.slug comment_id=node.id opition='dis_like' %}">
+                        <img src="{% static "images/dislike.png" %}" width="22px">
+                        <span class="like_span">{% if  node.get_total_dis_likes %}{{node.get_total_dis_likes}}
+                      {% else %} 0{% endif %}</span>
+                      </a>
+                      {% endif %}
+                      <p>
+                        <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#comment-{{node.id}}" aria-expanded="false" aria-controls="collapseExample">
+                          Відповісти
+                        </button>
+                      </p>
+                      <div class="collapse" id="comment-{{node.id}}">
+                          <form action="." method="POST">
+                            {% csrf_token %} 
+                              <div class="form-group">
+                                {{ form.content }}
+                                {% render_field form.parent  id=node.id style='display:none;' %}
+                                <script>
+                                  document.getElementById('{{node.id}}').value = "{{node.id}}";
+                                </script>
+                              </div>
+                              <input type="submit" class="btn btn-outline-secondary" value="Відповісти" >
+                            </form>
+                      </div>
+                    </div>
+                  {% endif %}
+                
+              
+              {% if not node.is_leaf_node %}
+                <div style="padding-left:50px;">
+                  {{ children }}
+                </div>
+              {% endif %}
+            {% endrecursetree %}
+      
+        </div>
+      </div>
+     <div class='col-lg-4'>
+        <div class='border p-3 mt-3'>
+          <form action="{% url 'articles:search' %}" method="get" class="input-group mt-3 mb-3">
+            <input type="text" name="q" id="search_input_blog" placeholder="Що шукати?" class="form-control" required>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary">
+                Шукати
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class='border p-3 mt-3'>
+          <h5 class='text-center'>Найновіші статті</h5>
+          <div class='text-center'>
+            {% for obj in latest_posts %}
+            <div class="card mx-auto m-2" style="width: 16rem;">
+              <img src="{{ obj.image.url }}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">{{obj.title|truncatechars:30}}</h5>
+                <p class="card-text">{{ obj.description|truncatechars:60 }}</p>
+                <a href="{% url 'articles:article-list' %}{{ obj.get_absolute_url }}" class="btn btn-outline-secondary">Читати далі</a>
+                <br>
+                <img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ obj.view_count }} | 
+                <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comment_count }}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class='border p-3 mt-3'>
+            <h5 class='text-center'>Найбільш популярні</h5>
+            <div class='text-center'>
+              {% for obj in top_posts %}
+              <div class="card mx-auto m-2" style="width: 16rem;">
+                <img src="{{ obj.image.url }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">{{obj.title|truncatechars:30}}</h5>
+                  <p class="card-text">{{ obj.description|truncatechars:60 }}</p>
+                  <a href="{% url 'articles:article-list' %}{{ obj.get_absolute_url }}" class="btn btn-outline-secondary">Читати далі</a>
+                  <br>
+                  <img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ obj.view_count }} | 
+                  <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comment_count }}
+                </div>
+              </div>
+              {% endfor %}
+          </div>
+        </div>
+        
+        <div class='border p-3 mt-3 mb-3'>
+        Найпопулярніші категорії
+          <div class='text-center mt-2'>
+          {% for category in top_categories %}
+            <a  class="btn btn-outline-dark" href='{% url 'articles:posts-by-category' category.slug %}'>{{ category.name }}</a>
+          {% endfor %}
+          </div>
+        </div>
+    </div> 
+  </div> 
+
+{% endblock %}
+ 

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js" integrity="sha512-HGOnQO9+SP1V92SrtZfjqxxtLmVzqZpjFFekvzZVWoiASSQgSr4cw9Kqd2+l8Llp4Gm0G8GIFJ4ddwZilcdb8A==" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" integrity="sha512-17EgCFERpgZKcm0j0fEq1YCJuyAWdz9KUtv1EjVuaOz8pDnh/0nZxmU6BBXwaaxqoi9PQXnRWqlcDB027hgv9A==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css" integrity="sha512-wR4oNhLBHf7smjy0K4oqzdWumd+r5/+6QO/vDda76MW5iug4PT7v86FoEkySIJft3XA0Ae6axhIvHrqwm793Nw==" crossorigin="anonymous" />
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+
+<title>
+    FlyEr - {{ object.workshop_name }}
+</title>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 border mt-3">
+                <h4>{{ object.workshop_name }}</h4>
+                <div id='ma2p' class='mt-2 mb-2'></div>
+            </div>
+            <div class="col-lg-4 border text-center mt-3">
+				<h5>Власник: {{object.user.username}}</h5>
+                <div class="text-center">
+                    <img src="{{ object.user.profile.image.url }}" class="rounded" alt="..." width='120px'>
+                </div>
+                <p>Користувач зареєстрований: {{ object.user.date_joined|date:'j.m.Y'}}</p>
+                <p><a href="{% url 'users:user-list' %}{{object.user.username}}" id='link_itself'>Відвідати сторінку користувача {{object.user.username}}</a></p>
+            </div>
+
+            <div class="col-lg-12 border mb-3 mt-3">
+                <table class="table table-hover m-2">
+                    <thead>
+                        <tr>
+                        <th scope="col">Послуга</th>
+                        <th scope="col">Опис</th>
+                        <th scope="col">Ціна</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in object.services.all %}
+                            <tr>
+                                <td>{{service.name}}</td>
+                                <td>{{service.description}}</td>
+                                <td>{{service.price}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+            #ma2p{
+                height: 500px;
+                width: 100%;
+            }
+    </style>
+    
+    <script>
+        mapboxgl.accessToken = "{{ mapbox_access_token }}";
+        var map = new mapboxgl.Map({
+        container: 'ma2p',
+        style: 'mapbox://styles/mapbox/streets-v10',
+        center: [{{ object.coord_h }}, {{ object.coord_v }}],
+        zoom: 9,
+        });
+        map.addControl(new mapboxgl.NavigationControl());
+        map.addControl(
+        new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+                trackUserLocation: true
+            })
+        );
+
+        var marker = new mapboxgl.Marker()
+        .setLngLat([{{ object.coord_h }}, {{ object.coord_v }}])
+        .addTo(map);
+        
+    </script>
+</body>
+	
+{% endblock %}

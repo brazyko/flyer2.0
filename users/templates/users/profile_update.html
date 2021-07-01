@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block content %}
+
+<title>Редагувати профіль</title>
+<div class='container'>
+	<div class="row">
+		<div class="col-lg-12 border mt-3 mb-3">
+			<form method='POST' enctype="multipart/form-data" class="form-group">
+				{% csrf_token %}
+				<div class="form-group">
+					<legend class="border-bottom mb-4">Редагувати профіль</legend>
+					<label>Ім'я користувача</label>
+					{% render_field u_form.username  class="form-control" %}
+				</div>
+				{% render_field p_form.image %}
+				<div class="input-group mb-3">
+					<div class="custom-file">
+					<label>Фото</label>
+						<label class="custom-file-label" for="inputGroupFile01">Вибратиф файл</label>
+					</div>
+				</div>
+				<div class="form-group">	
+					<img class="acc-img" src="{{user.profile.image.url }}" height ="112px">
+				</div>
+				<div class="form-group">
+					<label>Біо</label>
+					{% render_field p_form.about_me  class="form-control" %}
+				</div>
+				<div>
+					<label  for="inlineFormInputGroup">Instagram</label>
+					<div class="input-group mb-2">
+						<div class="input-group-prepend">
+						<div class="input-group-text">@</div>
+						</div>
+						{% render_field p_form.instagram  class="form-control" id="inlineFormInputGroup" placeholder="instagram" %}
+					</div>
+				</div>
+				<div>
+					<label  for="inlineFormInputGroup">Twitter</label>
+					<div class="input-group mb-2">
+						<div class="input-group-prepend">
+						<div class="input-group-text">@</div>
+						</div>
+						{% render_field p_form.twitter  class="form-control" id="inlineFormInputGroup" placeholder="Twitter" %}
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail1">YouTube</label>
+					{% render_field p_form.youtube  class="form-control" %}
+				</div>
+				<div class='form-group text-center'>
+					<button class="btn btn-outline-info" type='submit'>Оновити</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+	
+	
+{% endblock %}

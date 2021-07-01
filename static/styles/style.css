@@ -1,0 +1,20 @@
+.slides-images{
+    height: 500px;    
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+.slides-help-images{
+    height: 100px;    
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+.img-list-page{
+    height: 200px;    
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}

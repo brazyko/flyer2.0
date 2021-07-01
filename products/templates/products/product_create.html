@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load mptt_tags %}
+{% load static %}
+{% block content %}
+{% load widget_tweaks %}
+<title>Додати продукт</title>
+  <div class='container'>
+    <div class="row">
+      <div class="col-lg-12">
+      <form enctype="multipart/form-data" method="POST" class="form-group">
+        {% csrf_token %} 
+        <div class="form-group">
+            <p>Назва оголошення</p>
+            {% render_field form.title class="form-control" %}
+            <p>Категорія</p>
+            {% render_field form.category class="form-control" %}
+            <fieldset>
+                <legend>Додати фото</legend>
+                {{ image_form.management_form }}
+                {{ image_form.non_form_errors }}
+                
+                <div class="wrapper">
+                  {% for form in image_form %}
+                    <div class='servide-add'>
+                          {% if form.instance.image %}
+                          <div>
+                            <img src="{{form.instance.image.url}}" width="300px" style="margin: 10px 10px 10px 10px">
+                              {{form.id}}
+                              Вилучити{{form.DELETE}}
+                              {{form.product}}
+                          </div>
+                        {% else %}
+                            
+                            <div class="custom-file m-2">
+                              {% render_field form.image  class="custom-file-input" id="inputGroupFile02" %}					
+                              <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Вибрати файл</label>
+                            </div>
+                        {% endif %}
+                        
+                      </div>
+                    {% endfor %}
+                    <input type='button' id='more' class='btn btn-outline-secondary' value='Додати більше фото!' />
+                </div>
+            </fieldset>
+            <p>Опис</p>
+            {% render_field form.description class="form-control" %}
+            <p>Коротко про стан</p>
+            {% render_field form.summary class="form-control" %}
+            <div class="form-group">
+              <div class="form-check">
+                {% render_field form.features  class="form-check-input" type="checkbox" id="gridCheck" %}
+                <label class="form-check-label" for="gridCheck">
+                   <h6>Можлива відправа поштою</h6>
+                </label>
+              </div>
+            </div>
+            
+            <p>Ціна</p>
+            {% render_field form.price class="form-control" %}
+            
+            
+        </div>
+        
+        <div id='submit_item'>
+          <input type="submit" class="btn btn-primary" value="Опублікувати" >
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+	
+  
+  <script>
+
+    let data = Array.from(document.querySelectorAll('.wrapper .servide-add')),
+        step = 2,
+        item = 0;
+
+    data.slice(step).forEach(e => e.style.display = 'none');
+    item += step;
+
+    document.querySelector('#more').addEventListener('click', function(e){
+      let tmp = data.slice(item, item + step);
+      tmp.forEach(e => e.style.display = 'block');
+      item += step;
+      
+      if(tmp.length < 2)
+        this.remove();
+    });
+  </script>
+
+
+{% endblock %}

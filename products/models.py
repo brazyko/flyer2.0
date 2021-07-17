@@ -19,6 +19,7 @@ class Product(models.Model):
     features    = models.BooleanField(default=False)
     price       = models.DecimalField(decimal_places=2,max_digits=10000)
     publish     = models.DateTimeField(auto_now=False,auto_now_add=True,)
+    city        = models.CharField(max_length=30)
     views       = models.IntegerField(default=0)
     
     users_like  = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='likes',blank=True)

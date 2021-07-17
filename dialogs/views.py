@@ -12,15 +12,14 @@ from django.http import HttpResponse
 # Create your views here.
 class DialogsView(View):
     def get(self, request):
-        chats = Chat.objects.filter(members__in=[request.user.id])
+        chats = Chat.objects.filter(members=request.user)
         if request.is_ajax():
             response_data = {}
-            chats = Chat.objects.filter(members__in=[request.user.id])
+            chats = Chat.objects.filter(members=request.user)
             for c in chats:
                 response_record = {}
                 response_record['id'] = c.id
                 response_data.update(response_record)
-            print(response_data)
             return JsonResponse(response_data,safe=False,status=200)     
         context = {
             'user_profile': request.user,
@@ -30,7 +29,7 @@ class DialogsView(View):
 
 class CreateDialogView(View):
     def get(self, request, user_id):
-        chats = Chat.objects.filter(members__in=user_id)
+        chats = Chat.objects.filter(members=user_id and request.user)
         if chats.count() == 0:
             chat = Chat.objects.create()
             chat.members.add(request.user)
@@ -53,19 +52,18 @@ class MessagesView(View):
                 response_record = {}
                 response_record['chat'] = m.chat.id
                 response_record['author'] = m.author.username
+                response_record['image_url'] = m.author.profile.image.url
                 response_record['message'] = m.message
                 response_record['is_readed'] = m.is_readed
                 response_record['pub_date'] = m.pub_date
                 response_data.update(response_record)
                 m.is_readed = True
-                print(response_data)
                 m.save()
             return JsonResponse(response_data,safe=False,status=200)
-
         try:
             if request.user in chat.members.all():
                 chat.message_set.filter(is_readed=False).exclude(author = request.user).update(is_readed = True)
-                msgs=chat.message_set.all().order_by('-pub_date')[:10][::-1]
+                msgs=chat.message_set.all().order_by('pub_date')
             else:
                 chat = None 
         except Chat.DoesNotExist:

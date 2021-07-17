@@ -4,7 +4,7 @@
 {% load static %}
 {% block content %}
 {% load widget_tweaks %}
-<title>Додати продукт</title>
+<title>FlyEr - Додати продукт</title>
   <div class='container'>
     <div class="row">
       <div class="col-lg-12">
@@ -45,6 +45,8 @@
             </fieldset>
             <p>Опис</p>
             {% render_field form.description class="form-control" %}
+            <p>Місцезнаходження товару</p>
+            {% render_field form.city class="form-control" %}
             <p>Коротко про стан</p>
             {% render_field form.summary class="form-control" %}
             <div class="form-group">

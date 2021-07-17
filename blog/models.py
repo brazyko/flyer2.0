@@ -22,7 +22,6 @@ class Category(models.Model):
 
     def __str__(self):  
         return self.name
-        
 
 class Article(models.Model):
     author        = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
@@ -32,7 +31,6 @@ class Article(models.Model):
     description   = models.TextField(blank=True, null=True)
     image         = models.ImageField(default='default_product.jpg', upload_to='blog_pics')
     publish       = models.DateTimeField(auto_now=False,auto_now_add=True)
-    comment_count = models.IntegerField(default=0)
     view_count    = models.IntegerField(default=0,editable=True)
     featured      = models.BooleanField()
     def save(self, *args, **kwargs):

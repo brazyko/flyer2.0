@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
+{% load bootstrap4 %}
 <title>My messages</title>
 {% if not chat %}
     <div class="panel panel-body">
@@ -15,25 +16,25 @@
      {% endfor %}
     <div class="border rounded p-5">
         <div class="container">
-            <div class="col-lg-12 border mb-3">
-                {% for participant in chat.members.all %}
-                {{ participant.username }}
-                {% endfor %}
-            </div>
             <div class="row " id='messagebox'>
+                <div class="col-lg-12 border-bottom mb-3 text-center">
+                    {% for participant in chat.members.all %}
+                        {{ participant.username }}
+                    {% endfor %}
+                </div>
                 {% for message in msgs %}
                 {% if message.author != request.user %}
                 
                 <div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8">
-                    <p align="left" style="color:#c2c2c2; font-size: 14px;">
-                        <a href="{% url 'users:user-list' %}{{ message.author.username }}">
-                            {{message.author}}
+                    <p align="left" style="">
+                        <a href="{% url 'users:user-list' %}{{ message.author.username }}">  
+                            <img src="{{ message.author.profile.image.url }}" alt="" class="rounded-circle" width="44" height="44"> {{message.author}}
                         </a>
                     </p>
                     <p align="left" >
                         {{message.message}}
                     </p>
-                    <p align="left" style="font-size: 14px;">{{ message.pub_date|timesince }} ago
+                    <p align="left" style="font-size: 14px;">{{ message.pub_date|date:'G:i'}}
                         {% if message.is_readed == True %}
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
@@ -58,16 +59,16 @@
                 <div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8">
                     
                     <div class="float-right">
-                        <p align="right" style="color:#c2c2c2; font-size: 14px;">
+                        <p align="right" class="">
                             <a href="{% url 'users:user-list' %}{{ message.author.username }}">
-                                {{message.author}}
+                                {{message.author}} <img src="{{ message.author.profile.image.url }}" alt="" class="rounded-circle" width="44" height="44"> 
                             </a>
                         </p>
                         <p align="right" >
                             {{message.message}}
                         </p>
                     </div>  
-                    <p align="right" style="font-size: 14px;">{{ message.pub_date|timesince }} ago
+                    <p align="right" style="font-size: 14px;">{{ message.pub_date|date:'G:i'}}
                         {% if message.is_readed == True %}
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
@@ -84,16 +85,20 @@
                     
                 {% endfor %}
             </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="message_form">
+                        <form id="message-form" class="panel panel-body" method="post" >
+                            
+                            {% csrf_token %}
+                            {% bootstrap_form form %}
+                            
+                        </form><button type="submit" id="ajax-text-me" class="btn btn-success"><span class="ico ico-comment"></span>Надіслати повідомлення</button>
+                    </div>
+                </div>
+            </div>
         </div>
         {% endif %}
-        <div id="message_form">
-            <form id="message-form" class="panel panel-body" method="post" >
-                {% load bootstrap4 %}
-                {% csrf_token %}
-                {% bootstrap_form form %}
-                
-            </form><button type="submit" id="ajax-text-me" class="btn btn-success"><span class="ico ico-comment"></span>Send Message</button>
-        </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -108,7 +113,7 @@
                         }
                         else{
                             console.log(response)
-                            $('#messagebox').append('<div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8"><p align="left" style="color:#c2c2c2; font-size: 14px;"><a href="{% url "users:user-list" %}'+response.author+'">'+response.author+'</a></p><p align="left" >'+response.message+' </p> <p align="left" style="font-size: 14px;">'+response.pub_date+'ago{% if message.is_readed == True %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/></svg>{% else %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>{% endif %}</p></div>  <div class="col-lg-6 col-md-4 col-sm-4"><div class="float-right"></div></div>')
+                            $('#messagebox').append('<div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8"><p align="left" style="color:#c2c2c2; font-size: 14px;"><a href="{% url "users:user-list" %}'+response.author+'"><img src="'+response.image_url+'" alt="" class="rounded-circle" width="44" height="44">'+response.author+'</a></p><p align="left" >'+response.message+' </p> <p align="left" style="font-size: 14px;">'+response.pub_date+'{% if message.is_readed == True %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/></svg>{% else %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>{% endif %}</p></div>  <div class="col-lg-6 col-md-4 col-sm-4"><div class="float-right"></div></div>')
                         }
                         setTimeout(refresh, 100);
                     },
@@ -131,7 +136,7 @@
                     data: serializedData,
                     type: 'post',
                     success: function(response) {
-                        $("#messagebox").append('<div class="col-lg-6 col-md-4 col-sm-4"></div><div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8"><div class="float-right"><p align="right" style="color:#c2c2c2; font-size: 14px;"><a href="{% url "users:user-list" %}'+ response.author.username+'">'+ response.author.username +'</a></p><p align="right" >'+ response.message.message +'</p></div><p align="right" style="font-size: 14px;">'+ response.message.pub_date +' ago{% if message.is_readed == True %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/></svg>{% else %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>{% endif %}</p> </div>')
+                        $("#messagebox").append('<div class="col-lg-6 col-md-4 col-sm-4"></div><div class="col-lg-6 card bg-light mb-3 col-md-8 col-sm-8"><div class="float-right"><p align="right" style="color:#c2c2c2; font-size: 14px;"><a href="{% url "users:user-list" %}'+ response.author.username +'"><img src="{{ request.user.profile.image.url }}" alt="" class="rounded-circle" width="44" height="44">'+ response.author.username +'</a></p><p align="right" >'+ response.message.message +'</p></div><p align="right" style="font-size: 14px;">'+ response.message.pub_date +'{% if message.is_readed == True %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-all" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/></svg>{% else %}<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>{% endif %}</p> </div>')
                     }
                 })
                 $('#message-form')[0].reset();

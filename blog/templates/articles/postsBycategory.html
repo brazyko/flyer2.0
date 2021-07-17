@@ -7,9 +7,9 @@
 a{color:#555;}
 a:hover{color:#000; text-decoration:none}
 </style>
-  <head>
- 
-  </head>
+<title>
+  FlyEr - {{current_category.name}}
+</title>
   <body>  
 
   <div class="container">
@@ -34,7 +34,7 @@ a:hover{color:#000; text-decoration:none}
                   Опубліковано {{ post.publish|date:'j.m.Y' }}
                   |
                   <img src="{% static "images/comment.png" %}" alt="Comment count" width="12px">
-                  {{post.comment_count}}
+                  {{post.comments.count}}
                   |
                   <img src="{% static "images/view.png" %}" alt="VIew count" width="12px">
                   {{post.view_count}}
@@ -98,7 +98,7 @@ a:hover{color:#000; text-decoration:none}
                 <a href="{% url 'articles:article-list' %}{{ obj.get_absolute_url }}" class="btn btn-outline-secondary">Читати далі</a>
                 <br>
                 <img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ obj.view_count }} | 
-                <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comment_count }}
+                <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comments.count }}
               </div>
             </div>
             {% endfor %}
@@ -116,7 +116,7 @@ a:hover{color:#000; text-decoration:none}
                   <a href="{% url 'articles:article-list' %}{{ obj.get_absolute_url }}" class="btn btn-outline-secondary">Читати далі</a>
                   <br>
                   <img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ obj.view_count }} | 
-                  <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comment_count }}
+                  <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comments.count }}
                 </div>
               </div>
               {% endfor %}

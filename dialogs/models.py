@@ -23,7 +23,7 @@ class Chat(models.Model):
  
     def get_absolute_url(self):
         return 'dialogs:dialogs', (), {'chat_id': self.pk }
- 
+
  
 class Message(models.Model):
     chat = models.ForeignKey(Chat, verbose_name=_("Chat"),on_delete=models.CASCADE)

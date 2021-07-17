@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+  <title>
+    FlyEr - категорії
+  </title>
+  <style>
+    a{color:#555;}
+    a:hover{color:#000; text-decoration:none}
+  </style>
+  <head>
+ 
+  </head>
+  <body>  
+
+    <div class="container">
+      <div class="row text-center"> 
+          {% for category in categories %}
+          <div class="col-lg-4">
+            <div class="border m-1 mt-3 mb-3">
+              <h3 class="border-bottom">
+                <a href='{% url 'articles:posts-by-category' category.slug %}'>{{ category.name }}</a>
+              </h3>
+              {% if category.posts.count != 0 %}
+                 <h6>
+                   Найновіша стаття
+                 </h6>
+                <div class="card mx-auto m-2" style="width: 16rem;">
+                  <img src="{{ category.posts.last.image.url }}" class="card-img-top" alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title">{{category.posts.last.title|truncatechars:30}}</h5>
+                    <p class="card-text">{{ category.posts.last.description|truncatechars:60 }}</p>
+                    <a href="{% url 'articles:article-list' %}{{ category.posts.last.get_absolute_url }}" class="btn btn-outline-secondary">Читати далі</a>
+                    <br>
+                    <img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ category.posts.last.view_count }} | 
+                    <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ category.posts.last.comments.count }}
+                  </div>
+                </div>
+              {% else %}
+              <p>
+                Ще не додано жодної статті. Створіть першу!
+              </p>
+              <p>
+                <a class="btn btn-outline-secondary" href="{% url 'articles:article-create' %}">Додати статтю</a>
+              </p>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        
+    </div>
+
+  </body>
+</html>
+{% endblock %}

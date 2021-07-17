@@ -8,6 +8,7 @@ from .views import (
 		search,
       postsByCategory,
       UpdateCommentVote,
+      CategoryPage,
 	)
 
 
@@ -15,6 +16,7 @@ app_name= 'articles'
 urlpatterns = [
    path('', ArticleListView, name='article-list'),
    path('create/', ArticleCreateView,name='article-create'),
+   path('categories/',CategoryPage,name='category-page'),
    path('category-<postcategoryslug>',postsByCategory,name='posts-by-category'),
    path('<slug>/', ArticleDetailView, name='article-detail'),
    path('search',search,name='search'),

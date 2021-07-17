@@ -214,6 +214,7 @@ def products_by_category(request,category_slug):
 		products |= category.products.all()
 	if not products:
 		return redirect('products:product-list1')
+	categories = Category.objects.all()
 	page_number = request.GET.get('page',1)
 	paginator = Paginator(products,12)
 	page_obj = paginator.get_page(page_number)

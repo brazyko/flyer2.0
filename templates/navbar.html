@@ -10,7 +10,7 @@
         <a class="nav-link" href="{% url 'home' %}">Домашня сторінка</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'map:show_map' %}">Карта</a>
+        <a class="nav-link" href="{% url 'map:show_map' %}">Карта майстернь</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -18,7 +18,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="{% url 'articles:article-list' %}">Форум</a>
-          <a class="dropdown-item" href="#">За категоріями</a>
+          <a class="dropdown-item" href="{% url 'articles:category-page' %}">За категоріями</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{% url 'articles:article-create' %}">Додати статтю</a>
         </div>

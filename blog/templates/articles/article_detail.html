@@ -200,7 +200,7 @@
                 <a href="{% url 'articles:article-list' %}{{ obj.get_absolute_url }}" class="btn btn-outline-secondary">Читати далі</a>
                 <br>
                 <img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ obj.view_count }} | 
-                <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comment_count }}
+                <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comments.count }}
               </div>
             </div>
             {% endfor %}
@@ -218,7 +218,7 @@
                   <a href="{% url 'articles:article-list' %}{{ obj.get_absolute_url }}" class="btn btn-outline-secondary">Читати далі</a>
                   <br>
                   <img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ obj.view_count }} | 
-                  <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comment_count }}
+                  <img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ obj.comments.count }}
                 </div>
               </div>
               {% endfor %}

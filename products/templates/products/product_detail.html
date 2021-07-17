@@ -36,9 +36,9 @@
 <div class="container">
 	<div class="row">
 	
-		<div class='col-12 col-md-8 border mt-2'>
+		<div class='col-12 col-md-8 border mt-3 mb-3'>
 			
-			<div class='img-block'>
+			<div class='img-block mt-3'>
 				<div class="slick">
 					{% for image in object.odd_images.all %}
 					<div class="slides-images w-100" style="background-image: url({{image.image.url}}); "></div>
@@ -61,6 +61,7 @@
 				<h5>{{ object.price }}</h5>
 				<p>{{ object.description }}</p>
 				<p>Стан: {{ object.summary }}</p>
+				<p>Місцезнаходження: {{ object.city }}</p>
 				<p>
 					{% if object.features == True %}
 						Відправлю почтою
@@ -71,10 +72,10 @@
 				<p>Додано: {{ object.publish|date:'j.m.Y'}}</p>
 			</div>
 		</div>
-		<div class="col-12 col-md-4 border mt-2">
+		<div class="col-12 col-md-4 border mt-3 mb-3 text-center">
 			<h4 class='mt-2'>Інформація про продавця</h4>
+			<img src="{{ object.author.profile.image.url }}" class="rounded" alt="..." width='120px'>
 			<h5>{{ object.author.username }}</h5>
-			<img src="{{ object.author.imgage.url }}"></img>
 			<p><a class='btn btn-outline-secondary' href={% url 'users:user-profile' object.author.username %}>Перейти на сторінку користувача {{ object.author.username }}</a></p>
 		</div>
 		

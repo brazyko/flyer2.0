@@ -60,6 +60,7 @@ class ProductForm(forms.ModelForm):
 			'category',
 			'description',
 			'summary',
+			'city',
 			'features',
 			'price',
 		]

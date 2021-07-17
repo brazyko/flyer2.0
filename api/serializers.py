@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from products.models import Product,Category,ProductImage
+from dialogs.models import Message,VoiceMessage,Chat
 from map.models import Repairman
 from django.contrib.auth.models import User
 
@@ -28,3 +29,13 @@ class RepairmanSerializer(ModelSerializer):
     class Meta:
         model = Repairman
         fields = ['id','worksop_name','slug','workshop_image','user','about_workshop','services','coord_v','coord_h']
+
+class MessagesSerializer(ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['chat','author','message','pub_date','is_readed']
+        
+class ChatSerializer(ModelSerializer):
+    class Meta:
+        model = Chat
+        fields = ['members']

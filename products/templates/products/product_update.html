@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 {% load mptt_tags %}
+	<title>FlyEr - оновити продукт </title>
 	<form enctype="multipart/form-data" method="POST" class='updateform'>
 		{% csrf_token %} 
 		{{form|crispy}}

@@ -27,7 +27,7 @@
                     <img src="{{ object.user.profile.image.url }}" class="rounded" alt="..." width='120px'>
                 </div>
                 <p>Користувач зареєстрований: {{ object.user.date_joined|date:'j.m.Y'}}</p>
-                <p><a href="{% url 'users:user-list' %}{{object.user.username}}" id='link_itself'>Відвідати сторінку користувача {{object.user.username}}</a></p>
+                <p><a class='btn btn-outline-secondary' href={% url 'users:user-profile' object.user.username %}>Перейти на сторінку користувача {{ object.user.username }}</a></p>
             </div>
 
             <div class="col-lg-12 border mb-3 mt-3">

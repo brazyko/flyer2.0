@@ -3,30 +3,88 @@
 {% load mptt_tags %}
 {% block content %}
 
-<title>FlyEr - products</title>
+<title>FlyEr - ринок</title>
+<style>
+
+
+a{
+  color:#000;
+}
+a:hover{
+  color: #000;
+  text-decoration: none;
+}
+  .dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+</style>
 <body>
 <section>
   <div class='container'>
-
-      <div id="demo" class="collapse in ">
-        <div class="accordion">
-          {% recursetree categories %} 
-            <div class="tab">
-            <input type="checkbox" id="{{ node.slug }} " name="tab-group">
-            <label for="{{ node.slug }} " class="tab-title">{{ node.name }} </label> 
-            <section class="tab-content"> 
-              <p> GO to <a href='{{ node.slug }}'> {{ node.name }}</a> </p>
-              {% if not node.is_leaf_node %}
-                    <ul>
-                        <li>{{ children }}</li>
-                    </ul>
-                  {% endif %}
-            </section> 
-            </div> 
-          {% endrecursetree %}
-        </div>
-      </div>
-
+  <div class="dropdown mt-3">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Категорії
+    </button>
+    <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+      {% recursetree categories %}
+        {% if node.is_leaf_node %}
+        <li class="dropdown-item"><a href="{% url 'products:product-categories' node.slug %}">{{ node.name }}</a></li>
+        {% else %}
+        <li class="dropdown-submenu">
+          <a  class="dropdown-item"  href="{% url 'products:product-categories' node.slug %}">{{ node.name }}</a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item"><a href="{% url 'products:product-categories' node.slug %}">{{ children }}</a></li>
+          </ul>
+          {% endif %}
+        </li>
+        {% endrecursetree %}
+      </ul>
+</div>
+      
       <form class="row g-3 mt-3" action="{% url 'products:product-list1' %}" method="get">
         <div class="col-md-12">
           <label for="inputAddress" class="form-label">Пошук</label>
@@ -49,7 +107,6 @@
           <button type="submit" class="btn btn-outline-success">Шукати!</button>
         </div>
       </form>
-
       <div class="row">
         {% for product in products %}
           <div class="col-12 col-sm-6 col-md-4 col-xl-3 border">
@@ -63,8 +120,10 @@
             {% else %}
             no odd_images
             {% endif %}
-            <h5>{{product.title}}</h5>
-            <p>{{ product.summary }}</p>
+            <h5>{{product.title|truncatechars:40 }}</h5>
+            <h6>{{ product.price }}</h6>
+            <p>{{ product.summary|truncatechars:30  }}</p>
+            <p>{{ product.city }}</p>
             <p>
               {% if product.features == True %}
               Відправлю поштою
@@ -72,7 +131,7 @@
               Тільки на місці
               {% endif %}
             </p>
-            <p>{{ product.price }}</p>
+            
             <a  class="btn btn-outline-secondary w-100 mb-2" href='{{ product.get_absolute_url }}'>Детальніше</a>
           </div>
         {% endfor %}

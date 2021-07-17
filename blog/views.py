@@ -14,7 +14,7 @@ from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from .models import Article,Category,DisLike,Like,Comment
 from .forms import ArticleModelForm,CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.db.models import Count
 # Create your views here.
 def get_category_count():
 	queryset = Article.objects.values('categories__name').annotate(Count('categories__name'))
@@ -43,8 +43,7 @@ def ArticleListView(request):
 	posts = posts.order_by('-publish') 
 	latest  = Article.objects.order_by('-publish')[0:3]
 	top_posts  = Article.objects.order_by('-view_count')[0:3]
-	top_categories  = Category.objects.all()
-	top_categories.order_by()[0:3]
+	top_categories = categories.annotate(num_posts=Count('posts')).order_by('-num_posts')[0:3]
 	page_number = request.GET.get('page',1)
 	paginator = Paginator(posts,6)
 	page_obj = paginator.get_page(page_number)
@@ -75,8 +74,7 @@ def search(request):
 	posts = posts.order_by('-publish') 
 	latest  = Article.objects.order_by('-publish')[0:3]
 	top_posts  = Article.objects.order_by('-view_count')[0:3]
-	top_categories  = Category.objects.all()
-	top_categories.order_by()
+	top_categories = categories.annotate(num_posts=Count('posts')).order_by('-num_posts')[0:3]
 	page_number = request.GET.get('page',1)
 	paginator = Paginator(posts,6)
 	page_obj = paginator.get_page(page_number)
@@ -100,7 +98,7 @@ def search(request):
 
 def ArticleDetailView(request, slug):
 	categories = Category.objects.all()
-	top_categories = categories.order_by()[0:3]
+	top_categories = categories.annotate(num_posts=Count('posts')).order_by('-num_posts')[0:3]
 	latest  = Article.objects.order_by('-publish')[0:3]
 	post = get_object_or_404(Article,slug=slug)
 	post.view_count = post.view_count + 1
@@ -157,8 +155,7 @@ def postsByCategory(request,postcategoryslug):
 	posts = posts.order_by('-publish') 
 	latest  = Article.objects.order_by('-publish')[0:3]
 	top_posts  = Article.objects.order_by('-view_count')[0:3]
-	top_categories  = Category.objects.all()
-	top_categories.order_by()
+	top_categories = categories.annotate(num_posts=Count('posts')).order_by('-num_posts')[0:3]
 	page_number = request.GET.get('page',1)
 	paginator = Paginator(posts,6)
 	page_obj = paginator.get_page(page_number)
@@ -179,7 +176,12 @@ def postsByCategory(request,postcategoryslug):
 	}
 	return render(request,'articles/postsBycategory.html',context)
 
-
+def CategoryPage(request):
+	categories = Category.objects.all()
+	context = {
+		'categories': categories,
+	}
+	return render(request,'articles/by_category_page.html',context)
 
 class UpdateCommentVote(LoginRequiredMixin,View):
 

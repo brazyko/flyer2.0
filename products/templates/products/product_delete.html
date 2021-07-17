@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<title>FlyEr - видалити</title>
 	{% if user.is_superuser %}
 		<form action="." method="POST">{% csrf_token %}
 			<h1>do u want to delete the product" {{ object.title }} "?</h1>

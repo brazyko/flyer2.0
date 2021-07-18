@@ -3,13 +3,96 @@
 {% block content %}
 </style>
 <title>
-	FlyEr
+	FlyEr - головна
 </title>
 <body>
-	<div class="col-lg-12">
-		<h1>
-			flyEr
-		</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-4 col-sm-6 mt-3 text-center">
+				<h5>
+					Найновіше на ринку
+				</h5>
+				{% for product in products %}
+					<div class="card mx-auto m-2" style="width: 16rem;">
+						{% if product.odd_images.count > 0 %}
+						{% for image in product.odd_images.all %}
+						  {% if forloop.counter == 1 %}
+						 	 <img src="{{ image.image.url }}" class="card-img-top" alt="...">
+						  {% else %}
+						  {% endif %}
+						{% endfor %}
+						{% else %}
+						немає фото
+						{% endif %}
+						
+						<div class="card-body">
+						<h5 class="card-title">{{product.title|truncatechars:30}}</h5>
+						<p class="card-text">{{ product.description|truncatechars:60 }}</p>
+						<a href="{% url 'products:product-detail' product.category.slug product.slug %}" class="btn btn-outline-secondary">Переглянути деталі</a>
+						
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+			<div class="col-lg-4 col-sm-6 mt-3 text-center">
+				<h5>
+					Останні статті
+				</h5>
+				{% for article in articles %}
+					<div class="card mx-auto m-2" style="width: 16rem;">
+						<img src="{{ article.image.url }}" class="card-img-top" alt="...">
+						<div class="card-body">
+						<h5 class="card-title">{{article.title|truncatechars:30}}</h5>
+						<p class="card-text">{{ article.description|truncatechars:60 }}</p>
+						<a href="{% url 'articles:article-detail' article.slug %}" class="btn btn-outline-secondary">Читати далі</a>
+						<br>
+						<img src="{% static "images/view.png" %}" alt="Views" width="12px"> {{ article.view_count }} | 
+						<img src="{% static "images/comment.png" %}" alt="Comments" width="12px"> {{ article.comments.count }}
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+			<div class="col-lg-4  mt-3 text-center">
+				<form  action="{% url 'products:product-list1' %}" method="get" class="border p-3">
+					<div class="mt-2">
+					  <h5>
+						Пошук на ринку
+					  </h5>
+					  <input type="text" class="form-control" id="inputAddress" placeholder="знайти..." name='q'>
+					</div>
+					<div class="mt-2">
+					  <select id="inputState" class="form-control" name='select'>
+					  <option value="contains">Містить</option>
+					  <option value="full" >Повний збіг</option>
+					</select>
+					</div>
+					<div class="mt-2">
+					  <select id="inputState" class="form-control" name='sort'>
+					  <option value="not" selected>Не сортувати</option>
+					  <option value="lowhigh">Спочатку дешевші</option>
+					  <option value="highlow">Спочатку дорожчі</option>
+					</select>
+					</div>
+					<div class="mt-1">
+					  <button type="submit" class="btn btn-outline-success">Шукати!</button>
+					</div>
+				</form>
+				  
+				<form action="{% url 'articles:search' %}" method="get" class="input-group mt-3 mb-3 border p-3">
+					<div class="w-100">
+						<h5>
+							Пошук статтей
+						</h5>
+					</div>
+					<input type="text" name="q" id="search_input_blog" placeholder="Що шукати?" class="form-control" required>
+					<div class="input-group-append">
+					  <button class="btn btn-outline-success">
+						Шукати
+					  </button>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 </body>
 {% endblock %}

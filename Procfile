@@ -1,1 +1,1 @@
-web: gunicorn whellover.wsgi --log-file -
+web: gunicorn whellover.wsgi --preload

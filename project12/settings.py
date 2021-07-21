@@ -26,7 +26,7 @@ SECRET_KEY = '9r9j)5u5fli0z1suatvx)a!4kz^@@3@zv0!=@%k=&#a#zjxtxl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['wheellove.herokuapp.com','127.0.0.1:8000']
+ALLOWED_HOSTS = ['wheele.herokuapp.com','127.0.0.1:8000']
 
 
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')

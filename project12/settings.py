@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '9r9j)5u5fli0z1suatvx)a!4kz^@@3@zv0!=@%k=&#a#zjxtxl'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['wheellove.herokuapp.com','127.0.0.1:8000']
 

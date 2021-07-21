@@ -1,1 +1,1 @@
-web: gunicorn whellover.wsgi --preload
+web: gunicorn wheellove.wsgi --preload

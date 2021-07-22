@@ -22,7 +22,6 @@ class DialogsView(View):
                 response_data.update(response_record)
             return JsonResponse(response_data,safe=False,status=200)     
         context = {
-            'user_profile': request.user,
             'chats': chats
             }
         return render(request, 'dialogs.html',context )

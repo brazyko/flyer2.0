@@ -6,7 +6,7 @@ from blog.models import Article, Category
 
 # Create your views here.
 def home_view(request):
-	products = Product.objects.all().order_by('publish')[0:5]
+	products = Product.objects.all().order_by('-publish')[0:5]
 	articles = Article.objects.all().order_by('-publish')[0:5]
 	context = {
 		'products':products,

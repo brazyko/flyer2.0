@@ -6,19 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 # Create your models here.
 class Chat(models.Model):
-    DIALOG = 'D'
-    CHAT = 'C'
-    CHAT_TYPE_CHOICES = (
-        (DIALOG, _('Dialog')),
-        (CHAT, _('Chat'))
-    )
- 
-    type = models.CharField(
-        _('Тип'),
-        max_length=1,
-        choices=CHAT_TYPE_CHOICES,
-        default=DIALOG
-    )
     members = models.ManyToManyField(User, verbose_name=_("Member"))
  
     def get_absolute_url(self):

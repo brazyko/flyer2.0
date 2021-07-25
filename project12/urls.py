@@ -17,6 +17,7 @@ urlpatterns = [
     path('map/',include('map.urls')),
     path('api/', include('api.urls')),
     path('dialogs/',include('dialogs.urls')),
+    path('chat/',include('chat.urls')),
 
     path('register/',user_views.register,name='register'),
     path('login/',auth_views.LoginView.as_view(template_name='users/login.html'),name='login'),

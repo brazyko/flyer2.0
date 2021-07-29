@@ -14,7 +14,7 @@
                     <img src="{{ owner.profile.image.url }}" alt="Admin" class="rounded" width="150">
                     <div class="mt-3">
                       <h4>{{ owner.username }}</h4>
-                      <a href='{% url "dialogs:create_dialog"  owner.id %}' class="btn btn-outline-primary">Написати</a>
+                      <a href='{% url "chat:create_chatroom"  owner.id %}' class="btn btn-outline-primary">Написати</a>
                     </div>
                   </div>
                 </div>

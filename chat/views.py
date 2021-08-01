@@ -6,6 +6,7 @@ from django.utils.timezone import get_current_timezone
 from django.shortcuts import redirect
 from django.urls import reverse
 # Create your views here.
+@login_required
 def chatlist(request):
     chats = ChatRoom.objects.filter(participants= request.user)
     context = {

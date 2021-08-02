@@ -13,16 +13,7 @@ from django.http import HttpResponse
 class DialogsView(View):
     def get(self, request):
         chats = Chat.objects.filter(members=request.user)
-        if request.is_ajax():
-            response_data = {}
-            chats = Chat.objects.filter(members=request.user)
-            for c in chats:
-                response_record = {}
-                response_record['id'] = c.id
-                response_data.update(response_record)
-            return JsonResponse(response_data,safe=False,status=200)     
         context = {
-            'user_profile': request.user,
             'chats': chats
             }
         return render(request, 'dialogs.html',context )

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +26,10 @@ SECRET_KEY = '9r9j)5u5fli0z1suatvx)a!4kz^@@3@zv0!=@%k=&#a#zjxtxl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+ALLOWED_HOSTS = ['wheele.herokuapp.com','127.0.0.1']
+
+
+STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 
@@ -44,6 +49,8 @@ INSTALLED_APPS = [
     'api',
     'dialogs',
         #registr/login
+    'chat',
+    'channels',
 
     'users.apps.UsersConfig',
 
@@ -67,6 +74,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -89,7 +98,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'project12.wsgi.application'
+ASGI_APPLICATION = 'project12.asgi.application'
 
+CHANNEL_LAYERS={
+  'default': {
+      'BACKEND':'channels_redis.core.RedisChannelLayer',
+      'CONFIG':{
+          'hosts': [('127.0.0.1', 6379)],
+      }
+   },                                                                    
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -126,7 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Istanbul'
 
 USE_I18N = True
 
@@ -155,3 +173,5 @@ EMAIL_HOST_PASSWORD = ''
 
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+#django_heroku.settings(locals())

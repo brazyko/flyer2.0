@@ -1,13 +1,12 @@
-from django import forms
+
 from .models import *
-from mptt.forms import TreeNodeChoiceField, TreeNodeMultipleChoiceField
+
 from django import forms
 
 from django.forms.models import inlineformset_factory
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe
 from mptt.forms import TreeNodeChoiceField
-from django.forms import ModelForm
 
 
 
